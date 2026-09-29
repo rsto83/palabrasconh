@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión Ortográfica: El Secreto de la H Muta</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        gameBg: '#0f172a',
+                        gameCard: '#1e293b',
+                        hPrimary: '#06b6d4',
+                        hAccent: '#f59e0b',
+                        hSuccess: '#10b981',
+                        hDanger: '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+        .glow-amber {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 8px;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gameBg text-white min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+    <!-- Top Bar Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 p-3 sm:p-4 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-400 text-2xl font-black">
+                    H
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-400 to-teal-300 bg-clip-text text-transparent leading-tight">
+                        Misión Ortográfica: La 'H' Muta
+                    </h1>
+                    <p class="text-xs text-slate-400 font-outfit">Reglas de la H • Primaria / EBI</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar (Hidden on welcome/end) -->
+            <div id="game-stats-bar" class="hidden flex items-center flex-wrap gap-2 sm:gap-4">
+                
+                <!-- Hearts -->
+                <div class="flex items-center space-x-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                    <span class="text-xs text-slate-400 font-bold hidden sm:inline">Vidas:</span>
+                    <div id="lives-container" class="flex space-x-1 text-red-500 text-base">
+                        <i class="fa-solid fa-heart animate-pulse"></i>
+                        <i class="fa-solid fa-heart animate-pulse"></i>
+                        <i class="fa-solid fa-heart animate-pulse"></i>
+                    </div>
+                </div>
+
+                <!-- Points -->
+                <div class="bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 text-xs sm:text-sm font-semibold text-amber-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-star"></i>
+                    <span id="score-display">0 Puntos</span>
+                </div>
+
+                <!-- Mission Stage -->
+                <div class="bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700 text-xs sm:text-sm font-semibold text-cyan-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-compass"></i>
+                    <span id="level-indicator">Nivel 1 / 5</span>
+                </div>
+
+                <!-- Rules Modal Toggle Button -->
+                <button onclick="toggleRulesModal()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span class="hidden md:inline">Reglas de la H</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center items-center">
+
+        <!-- ================= WELCOME SCREEN ================= -->
+        <div id="screen-welcome" class="w-full bg-slate-800/90 border border-slate-700 rounded-3xl p-6 sm:p-10 text-center shadow-2xl relative overflow-hidden my-auto">
+            <div class="absolute -top-12 -right-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="w-20 h-20 bg-cyan-500/20 border-2 border-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-5 text-4xl text-cyan-300 shadow-lg animate-float">
+                <i class="fa-solid fa-spell-check"></i>
+            </div>
+
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-3">
+                ¡El Misterio de la H Muta!
+            </h2>
+            <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-6 leading-relaxed font-outfit">
+                En el idioma español la letra <strong class="text-cyan-400">"H"</strong> es silenciosa, ¡pero sigue reglas muy estrictas! Un villano ortográfico ha borrado la "H" de muchos libros del laboratorio. Ayuda a nuestro equipo a completar las palabras y recuperar las reglas en 5 misiones espaciales.
+            </p>
+
+            <!-- Orthography Rules Summary Badges -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto mb-8 text-xs font-outfit text-left">
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                    <div class="text-cyan-400 font-bold mb-1"><i class="fa-solid fa-water mr-1"></i> Diptongos</div>
+                    <span class="text-slate-400">hia-, hie-, hue-, hui- (huevo, hielo)</span>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                    <div class="text-amber-400 font-bold mb-1"><i class="fa-solid fa-vial mr-1"></i> Prefijos</div>
+                    <span class="text-slate-400">hidr-, hiper-, hipo-, hecto-</span>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                    <div class="text-emerald-400 font-bold mb-1"><i class="fa-solid fa-bolt mr-1"></i> Verbos</div>
+                    <span class="text-slate-400">hacer, haber, hablar, hallar, huir</span>
+                </div>
+                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                    <div class="text-indigo-400 font-bold mb-1"><i class="fa-solid fa-smog mr-1"></i> Hum- + Vocal</div>
+                    <span class="text-slate-400">humo, humano, humilde</span>
+                </div>
+            </div>
+
+            <!-- Player Input Form -->
+            <div class="max-w-md mx-auto space-y-4">
+                <div>
+                    <label for="player-name" class="block text-xs font-semibold text-slate-400 mb-1 text-left">Nombre de la/el Detective Ortográfico:</label>
+                    <input type="text" id="player-name" placeholder="Escribe tu nombre aquí..." class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-outfit">
+                </div>
+
+                <button onclick="startGame()" class="w-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold py-4 px-8 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 text-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rocket"></i> Iniciar Misión
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 1: DIPTONGOS (HIA, HIE, HUE, HUI) ================= -->
+        <div id="level-1" class="level-screen hidden w-full bg-slate-800 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">Misión 1</span>
+                    <h2 class="text-xl sm:text-2xl font-bold">El Dominio de los Diptongos (hia, hie, hue, hui)</h2>
+                </div>
+                <button onclick="showLevelHint(1)" class="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-lightbulb"></i> Pista
+                </button>
+            </div>
+
+            <div class="bg-cyan-950/40 border border-cyan-800/60 p-4 rounded-2xl mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-circle-info text-cyan-400 text-2xl"></i>
+                <p class="text-xs sm:text-sm text-cyan-100 font-outfit leading-relaxed">
+                    <strong>Regla:</strong> Se escriben siempre con <strong class="text-cyan-300">"H"</strong> las palabras que empiezan por los diptongos <strong>hia-, hie-, hue-, hui-</strong>.
+                </p>
+            </div>
+
+            <div id="l1-container" class="space-y-4">
+                <!-- Dynamically rendered exercises for level 1 -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="checkLevel1()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold px-6 py-3 rounded-xl transition active:scale-95 shadow-lg">
+                    Verificar Respuestas <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 2: PREFIJOS CIENTÍFICOS (hidr, hiper, hipo, hemi, hecto, hexa) ================= -->
+        <div id="level-2" class="level-screen hidden w-full bg-slate-800 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Misión 2</span>
+                    <h2 class="text-xl sm:text-2xl font-bold">El Laboratorio de Prefijos Cielos e Hidros</h2>
+                </div>
+                <button onclick="showLevelHint(2)" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-lightbulb"></i> Pista
+                </button>
+            </div>
+
+            <div class="bg-amber-950/40 border border-amber-800/60 p-4 rounded-2xl mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-flask text-amber-400 text-2xl"></i>
+                <p class="text-xs sm:text-sm text-amber-100 font-outfit leading-relaxed">
+                    <strong>Regla:</strong> Llevan <strong class="text-amber-300">"H"</strong> inicial las palabras que empiezan por prefijos como: <strong>hidr-</strong> (agua), <strong>hiper-</strong> (exceso), <strong>hipo-</strong> (debajo/caballo), <strong>hemi-</strong> (mitad) y <strong>hecto-</strong> (cien).
+                </p>
+            </div>
+
+            <div id="l2-container" class="space-y-4">
+                <!-- Dynamically rendered exercises for level 2 -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="checkLevel2()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-6 py-3 rounded-xl transition active:scale-95 shadow-lg">
+                    Comprobar Prefijos <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 3: VERBOS CON H (Haber, Hacer, Hablar, Hallar, Huir) ================= -->
+        <div id="level-3" class="level-screen hidden w-full bg-slate-800 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold">Misión 3</span>
+                    <h2 class="text-xl sm:text-2xl font-bold">La Cripta de los Verbos Mágicos</h2>
+                </div>
+                <button onclick="showLevelHint(3)" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-lightbulb"></i> Pista
+                </button>
+            </div>
+
+            <div class="bg-emerald-950/40 border border-emerald-800/60 p-4 rounded-2xl mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-wand-magic-sparkles text-emerald-400 text-2xl"></i>
+                <p class="text-xs sm:text-sm text-emerald-100 font-outfit leading-relaxed">
+                    <strong>Regla:</strong> Todas las formas conjugadas de los verbos cuyo infinitivo lleva <strong class="text-emerald-300">"H"</strong> conservan esa H. Ejemplo: <i>hacer (hice, haré), haber (hay, había, hubo), hablar (habló), hallar (hallaron)</i>.
+                </p>
+            </div>
+
+            <div id="l3-container" class="space-y-4">
+                <!-- Dynamically rendered exercises for level 3 -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="checkLevel3()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-6 py-3 rounded-xl transition active:scale-95 shadow-lg">
+                    Conjugar y Avanzar <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 4: HUM- + VOCAL & FALSOS AMIGOS ================= -->
+        <div id="level-4" class="level-screen hidden w-full bg-slate-800 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-indigo-400 font-bold">Misión 4</span>
+                    <h2 class="text-xl sm:text-2xl font-bold">Clasificación: ¿Lleva 'H' o No Lleva 'H'?</h2>
+                </div>
+                <button onclick="showLevelHint(4)" class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-lightbulb"></i> Pista
+                </button>
+            </div>
+
+            <div class="bg-indigo-950/40 border border-indigo-800/60 p-4 rounded-2xl mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-scale-balanced text-indigo-400 text-2xl"></i>
+                <p class="text-xs sm:text-sm text-indigo-100 font-outfit leading-relaxed">
+                    <strong>Regla:</strong> Las palabras que empiezan por <strong>hum- + vocal</strong> llevan H (ej. <i>humo, humano, húmedo, humilde</i>). ¡Cuidado con palabras sin H como <i>umbria, umbral, umbilical</i>!
+                </p>
+            </div>
+
+            <div id="l4-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Dynamically rendered sorting cards for level 4 -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="checkLevel4()" class="bg-indigo-500 hover:bg-indigo-400 text-white font-extrabold px-6 py-3 rounded-xl transition active:scale-95 shadow-lg">
+                    Clasificar Palabras <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= LEVEL 5: DESAFÍO FINAL DE ESCRITURA Y DETECTOR ================= -->
+        <div id="level-5" class="level-screen hidden w-full bg-slate-800 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-5">
+                <div>
+                    <span class="text-xs uppercase tracking-widest text-purple-400 font-bold">Misión 5 - Desafío Final</span>
+                    <h2 class="text-xl sm:text-2xl font-bold">El Gran Examen del Inspector Ortográfico</h2>
+                </div>
+                <button onclick="showLevelHint(5)" class="bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/50 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-regular fa-lightbulb"></i> Pista
+                </button>
+            </div>
+
+            <div class="bg-purple-950/40 border border-purple-800/60 p-4 rounded-2xl mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-trophy text-purple-400 text-2xl"></i>
+                <p class="text-xs sm:text-sm text-purple-100 font-outfit leading-relaxed">
+                    ¡Demuestra todo lo aprendido! Completa el texto integrador escribiendo correctamente las palabras en los espacios marcados.
+                </p>
+            </div>
+
+            <div id="l5-container" class="bg-slate-900 p-5 rounded-2xl border border-slate-700 space-y-4 font-outfit leading-relaxed text-sm sm:text-base">
+                <!-- Dynamically rendered passage for level 5 -->
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="checkLevel5()" class="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-extrabold px-8 py-3.5 rounded-xl transition active:scale-95 shadow-xl text-lg">
+                    ¡Restaurar Libro y Finalizar! <i class="fa-solid fa-check-double ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= GAME OVER SCREEN ================= -->
+        <div id="screen-gameover" class="hidden w-full bg-slate-800 border border-red-500/40 rounded-3xl p-6 sm:p-10 text-center shadow-2xl my-auto">
+            <div class="w-20 h-20 bg-red-500/20 border-2 border-red-500 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl text-red-500 animate-bounce">
+                <i class="fa-solid fa-heart-crack"></i>
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2">¡Se han agotado las vidas!</h2>
+            <p class="text-slate-300 text-sm sm:text-base max-w-md mx-auto mb-6 font-outfit">
+                ¡No te desanimes! La ortografía es cuestión de constante práctica. Revisa las reglas de la H e inténtalo de nuevo.
+            </p>
+            <button onclick="restartGame()" class="bg-red-500 hover:bg-red-400 text-white font-bold py-3.5 px-8 rounded-xl transition active:scale-95 shadow-lg">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Reintentar Misión
+            </button>
+        </div>
+
+        <!-- ================= VICTORY SCREEN ================= -->
+        <div id="screen-victory" class="hidden w-full bg-slate-800 border border-emerald-500/40 rounded-3xl p-6 sm:p-10 text-center shadow-2xl my-auto relative overflow-hidden">
+            <canvas id="confetti-canvas" class="absolute inset-0 pointer-events-none w-full h-full"></canvas>
+
+            <div class="w-20 h-20 bg-emerald-500/20 border-2 border-emerald-400 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl text-emerald-400 glow-green animate-float">
+                <i class="fa-solid fa-award"></i>
+            </div>
+
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2">¡Misión Cumplida con Éxito!</h2>
+            <p class="text-emerald-400 font-bold text-lg mb-6 font-outfit" id="victory-player-text">
+                ¡Gran Trabajo, Detective Ortográfico!
+            </p>
+
+            <div class="bg-slate-900/90 border border-slate-700 max-w-md mx-auto p-5 rounded-2xl mb-6 font-outfit text-left space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Puntaje Total Obtenido:</span>
+                    <span id="victory-score" class="font-extrabold text-amber-400 text-lg">0 Puntos</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Vidas Conservadas:</span>
+                    <span id="victory-lives" class="font-bold text-red-400">3 / 3</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Título Obtenido:</span>
+                    <span class="font-bold text-cyan-400">Maestro/a del Uso de la 'H'</span>
+                </div>
+            </div>
+
+            <button onclick="restartGame()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-3.5 px-8 rounded-xl transition active:scale-95 shadow-lg">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Jugar Otra Vez
+            </button>
+        </div>
+
+    </main>
+
+    <!-- ================= RULES MODAL ================= -->
+    <div id="rules-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-cyan-500/50 w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+            <!-- Header -->
+            <div class="bg-slate-800 p-4 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center space-x-2 text-cyan-400 font-bold">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Guía Completa de Reglas de la 'H'</span>
+                </div>
+                <button onclick="toggleRulesModal()" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Rules Content -->
+            <div class="p-6 overflow-y-auto space-y-4 custom-scrollbar text-sm font-outfit leading-relaxed">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-cyan-400 font-bold text-base mb-1">1. Diptongos al inicio</h4>
+                    <p class="text-slate-300">Se escriben con H las palabras que empiezan por los diptongos <strong>hia-, hie-, hue-, hui-</strong>.</p>
+                    <p class="text-slate-400 text-xs mt-1">Ejemplos: <i>hielo, huevo, huella, hiato, huida.</i></p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-amber-400 font-bold text-base mb-1">2. Prefijos de origen griego</h4>
+                    <p class="text-slate-300">Llevan H inicial los prefijos: <strong>hidr-</strong> (agua), <strong>hiper-</strong> (exceso/grande), <strong>hipo-</strong> (debajo o caballo), <strong>homo-</strong> (igual), <strong>hetero-</strong> (diferente), <strong>hemi-</strong> (mitad), <strong>hecto-</strong> (cien), <strong>hexa-</strong> (seis), <strong>hepta-</strong> (siete).</p>
+                    <p class="text-slate-400 text-xs mt-1">Ejemplos: <i>hidroavión, hipermercado, hipopótamo, hemisferio.</i></p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-emerald-400 font-bold text-base mb-1">3. Formas Verbales</h4>
+                    <p class="text-slate-300">Llevan H todas las formas de los verbos cuyo infinitivo se escribe con H.</p>
+                    <p class="text-slate-400 text-xs mt-1">Verbos clave: <i>haber (hay, había), hacer (hizo, haré), hablar (hablé), hallar (hallaron), huir (huyó).</i></p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-indigo-400 font-bold text-base mb-1">4. Palabras que empiezan por HUM- + vocal</h4>
+                    <p class="text-slate-300">Se escriben con H las palabras que empiezan por la sílaba <strong>hum-</strong> seguida de una vocal.</p>
+                    <p class="text-slate-400 text-xs mt-1">Ejemplos: <i>humo, humano, humedad, humilde, humor.</i></p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <h4 class="text-purple-400 font-bold text-base mb-1">5. Interjecciones comunes</h4>
+                    <p class="text-slate-300">Llevan H (al inicio o al final): <i>¡hola!, ¡ah!, ¡oh!, ¡bah!, ¡eh!, ¡huy!</i></p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-3 bg-slate-800 border-t border-slate-700 text-right">
+                <button onclick="toggleRulesModal()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition">
+                    ¡Entendido, a jugar!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HINT MODAL ================= -->
+    <div id="hint-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/50 max-w-md w-full rounded-2xl p-6 shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-500/20 border border-amber-400 rounded-full flex items-center justify-center mx-auto text-amber-400 text-2xl">
+                <i class="fa-regular fa-lightbulb"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Pista del Nivel</h3>
+            <p id="hint-text" class="text-sm font-outfit text-slate-300 leading-relaxed"></p>
+            <button onclick="closeHintModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2 rounded-xl text-sm transition">
+                ¡Entendido!
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 p-3 text-center text-xs text-slate-500 font-outfit">
+        Misión Ortográfica • Reglas del uso de la H • Primaria / EBI
+    </footer>
+
+    <script>
+        // Game State Variables
+        let currentLevel = 1;
+        let lives = 3;
+        let score = 0;
+        let playerName = "Detective";
+
+        // Web Audio Synthesizer
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.setValueAtTime(120, now + 0.12);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'victory') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.3);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + idx * 0.12 + 0.3);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio playback error:", e);
+            }
+        }
+
+        // LEVEL 1 EXERCISES (Diptongos hia, hie, hue, hui)
+        const level1Data = [
+            { word: "hielo", missing: "hie", prefix: "", suffix: "lo", options: ["hie", "ie", "ye"], answer: "hie", desc: "Sustancia congelada por el frío" },
+            { word: "huevo", missing: "hue", prefix: "", suffix: "vo", options: ["we", "hue", "ue"], answer: "hue", desc: "Alimento de cáscara que ponen las aves" },
+            { word: "huella", missing: "hue", prefix: "", suffix: "lla", options: ["hue", "we", "ue"], answer: "hue", desc: "Rastro que deja un pie o pisada" },
+            { word: "huida", missing: "hui", prefix: "", suffix: "da", options: ["wi", "ui", "hui"], answer: "hui", desc: "Acción de escapar o huir" },
+            { word: "hiena", missing: "hie", prefix: "", suffix: "na", options: ["yena", "hie", "ie"], answer: "hie", desc: "Animal carnívoro salvaje" }
+        ];
+
+        // LEVEL 2 EXERCISES (Prefijos griegos)
+        const level2Data = [
+            { question: "Aparato que vuela y puede acuatizar sobre el agua:", wordPrefix: "hidr", fullWord: "hidroavión", options: ["hidroavión", "idroavión", "yidroavión"], answer: "hidroavión" },
+            { question: "Supermercado de gran tamaño con exceso de productos:", wordPrefix: "hiper", fullWord: "hipermercado", options: ["ipermercado", "hipermercado", "yipermercado"], answer: "hipermercado" },
+            { question: "Animal mamífero grande que vive en ríos (caballo de agua):", wordPrefix: "hipo", fullWord: "hipopótamo", options: ["ipopótamo", "hipopótamo", "yipopótamo"], answer: "hipopótamo" },
+            { question: "Cada una de las dos mitades de la esfera terrestre:", wordPrefix: "hemi", fullWord: "hemisferio", options: ["hemisferio", "emisferio", "yemisferio"], answer: "hemisferio" },
+            { question: "Medida equivalente a 100 metros:", wordPrefix: "hecto", fullWord: "hectómetro", options: ["ectómetro", "hectómetro", "yectómetro"], answer: "hectómetro" }
+        ];
+
+        // LEVEL 3 EXERCISES (Verbos con H)
+        const level3Data = [
+            { sentence: "Ayer mi hermano __________ una maqueta excelente para la feria de ciencias.", options: ["hizo", "izo"], answer: "hizo", verb: "hacer" },
+            { sentence: "No __________ nadie en la biblioteca cuando llegamos.", options: ["había", "abía"], answer: "había", verb: "haber" },
+            { sentence: "Los científicos __________ una nueva especie de flor en la selva.", options: ["hallaron", "allaron"], answer: "hallaron", verb: "hallar" },
+            { sentence: "La profesora nos __________ sobre la importancia del cuidado del agua.", options: ["habló", "abló"], answer: "habló", verb: "hablar" },
+            { sentence: "El conejo __________ rápidamente hacia su madriguera.", options: ["huyó", "ulló"], answer: "huyó", verb: "huir" }
+        ];
+
+        // LEVEL 4 EXERCISES (Hum- + vocal vs Falsos amigos)
+        const level4Data = [
+            { word: "Humo", hasH: true, reason: "Empieza por hum- + vocal" },
+            { word: "Humano", hasH: true, reason: "Empieza por hum- + vocal" },
+            { word: "Umbral", hasH: false, reason: "NO empieza por hum- + vocal" },
+            { word: "Humedad", hasH: true, reason: "Empieza por hum- + vocal" },
+            { word: "Umbria", hasH: false, reason: "NO lleva H inicial" },
+            { word: "Humilde", hasH: true, reason: "Empieza por hum- + vocal" }
+        ];
+
+        // LEVEL 5 EXERCISES (Passage text with missing H-words)
+        const level5Data = {
+            text: [
+                "Un día helado, al abrir la ventana vimos mucho ",
+                "1", // humo (humo / umo)
+                " saliendo de la cocina. En la mesa había un plato con un ",
+                "2", // huevo (huevo / uevo)
+                " caliente. El abuelo nos ",
+                "3", // habló (habló / habló)
+                " sobre cómo los científicos usan el prefijo ",
+                "4", // hidro (hidro / idro)
+                " para referirse al agua. Nos contó que siempre debemos ser ",
+                "5"  // humildes (humildes / umildes)
+            ],
+            blanks: [
+                { id: "1", options: ["humo", "umo"], answer: "humo" },
+                { id: "2", options: ["huevo", "uevo"], answer: "huevo" },
+                { id: "3", options: ["habló", "abló"], answer: "habló" },
+                { id: "4", options: ["hidro", "idro"], answer: "hidro" },
+                { id: "5", options: ["humildes", "umildes"], answer: "humildes" }
+            ]
+        };
+
+        function startGame() {
+            playSound('click');
+            const nameInput = document.getElementById('player-name').value.trim();
+            playerName = nameInput !== "" ? nameInput : "Detective";
+
+            currentLevel = 1;
+            lives = 3;
+            score = 0;
+
+            updateLivesUI();
+            updateScoreUI();
+
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-gameover').classList.add('hidden');
+            document.getElementById('screen-victory').classList.add('hidden');
+            document.getElementById('game-stats-bar').classList.remove('hidden');
+
+            loadLevel(1);
+        }
+
+        function loadLevel(levelNum) {
+            currentLevel = levelNum;
+            updateLevelUI();
+
+            document.querySelectorAll('.level-screen').forEach(el => el.classList.add('hidden'));
+            const currentScreen = document.getElementById(`level-${levelNum}`);
+            if (currentScreen) {
+                currentScreen.classList.remove('hidden');
+            }
+
+            if (levelNum === 1) renderLevel1();
+            if (levelNum === 2) renderLevel2();
+            if (levelNum === 3) renderLevel3();
+            if (levelNum === 4) renderLevel4();
+            if (levelNum === 5) renderLevel5();
+        }
+
+        function updateLivesUI() {
+            const container = document.getElementById('lives-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < lives) {
+                    container.innerHTML += `<i class="fa-solid fa-heart text-red-500 animate-pulse"></i>`;
+                } else {
+                    container.innerHTML += `<i class="fa-regular fa-heart text-slate-600"></i>`;
+                }
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('score-display').innerText = `${score} Puntos`;
+        }
+
+        function updateLevelUI() {
+            document.getElementById('level-indicator').innerText = `Nivel ${currentLevel} / 5`;
+        }
+
+        function loseLife() {
+            playSound('error');
+            lives--;
+            updateLivesUI();
+
+            if (lives <= 0) {
+                document.querySelectorAll('.level-screen').forEach(el => el.classList.add('hidden'));
+                document.getElementById('game-stats-bar').classList.add('hidden');
+                document.getElementById('screen-gameover').classList.remove('hidden');
+            } else {
+                showToast("¡Respuesta incorrecta! Pierdes 1 vida. ¡Revisa la regla!", "error");
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const existing = document.getElementById('game-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'game-toast';
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-2xl shadow-2xl text-sm font-semibold z-50 transition-all transform duration-300 ${
+                type === 'error' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'
+            }`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-check'} mr-2"></i> ${msg}`;
+
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function renderLevel1() {
+            const container = document.getElementById('l1-container');
+            container.innerHTML = '';
+
+            level1Data.forEach((item, idx) => {
+                let optionsHTML = item.options.map(opt => `
+                    <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl px-4 py-2.5 flex items-center space-x-2 transition">
+                        <input type="radio" name="l1-q${idx}" value="${opt}" class="accent-cyan-400 w-4 h-4">
+                        <span class="font-bold text-cyan-300 text-base">${opt}</span>
+                    </label>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="bg-slate-900/90 border border-slate-700 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="text-left">
+                            <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block mb-1">Palabra ${idx+1}: ${item.desc}</span>
+                            <div class="text-2xl font-extrabold text-white font-mono">
+                                <span class="text-cyan-400 underline decoration-dashed">???</span>${item.suffix}
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 justify-center md:justify-end">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkLevel1() {
+            let allCorrect = true;
+            level1Data.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="l1-q${idx}"]:checked`);
+                if (!selected || selected.value !== item.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                score += 100;
+                updateScoreUI();
+                showToast("¡Excelente! Todos los diptongos completados correctamente.", "success");
+                loadLevel(2);
+            } else {
+                loseLife();
+            }
+        }
+
+        function renderLevel2() {
+            const container = document.getElementById('l2-container');
+            container.innerHTML = '';
+
+            level2Data.forEach((item, idx) => {
+                let optionsHTML = item.options.map(opt => `
+                    <option value="${opt}">${opt}</option>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="bg-slate-900/90 border border-slate-700 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-outfit">
+                        <div class="text-left max-w-lg">
+                            <span class="text-xs text-amber-400 font-bold block mb-1"><i class="fa-solid fa-microscope mr-1"></i> Pista Prefijo "${item.wordPrefix}-"</span>
+                            <p class="text-slate-200 text-sm sm:text-base">${item.question}</p>
+                        </div>
+                        <select id="l2-select-${idx}" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-amber-300 font-bold focus:outline-none focus:border-amber-400 w-full sm:w-auto">
+                            <option value="">-- Seleccionar --</option>
+                            ${optionsHTML}
+                        </select>
+                    </div>
+                `;
+            });
+        }
+
+        function checkLevel2() {
+            let allCorrect = true;
+            level2Data.forEach((item, idx) => {
+                const val = document.getElementById(`l2-select-${idx}`).value;
+                if (val !== item.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                score += 150;
+                updateScoreUI();
+                showToast("¡Perfecto! Has dominado los prefijos científicos.", "success");
+                loadLevel(3);
+            } else {
+                loseLife();
+            }
+        }
+
+        function renderLevel3() {
+            const container = document.getElementById('l3-container');
+            container.innerHTML = '';
+
+            level3Data.forEach((item, idx) => {
+                let optionsHTML = item.options.map(opt => `
+                    <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 flex items-center space-x-2 transition">
+                        <input type="radio" name="l3-q${idx}" value="${opt}" class="accent-emerald-400 w-4 h-4">
+                        <span class="font-bold text-emerald-300">${opt}</span>
+                    </label>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="bg-slate-900/90 border border-slate-700 p-4 rounded-2xl space-y-3 font-outfit text-left">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-bolt mr-1"></i> Verbo en Infinitivo: "${item.verb}"</span>
+                        </div>
+                        <p class="text-slate-200 text-sm sm:text-base">${item.sentence}</p>
+                        <div class="flex flex-wrap gap-3 pt-1">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkLevel3() {
+            let allCorrect = true;
+            level3Data.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="l3-q${idx}"]:checked`);
+                if (!selected || selected.value !== item.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                score += 200;
+                updateScoreUI();
+                showToast("¡Magnífico! Has conjugado los verbos con H impecablemente.", "success");
+                loadLevel(4);
+            } else {
+                loseLife();
+            }
+        }
+
+        function renderLevel4() {
+            const container = document.getElementById('l4-container');
+            container.innerHTML = '';
+
+            level4Data.forEach((item, idx) => {
+                container.innerHTML += `
+                    <div class="bg-slate-900/90 border border-slate-700 p-4 rounded-2xl flex flex-col justify-between space-y-3 text-left">
+                        <div>
+                            <div class="text-2xl font-black text-indigo-300 mb-1">${item.word}</div>
+                            <p class="text-xs text-slate-400 font-outfit">${item.reason}</p>
+                        </div>
+                        <div class="flex space-x-2 pt-2">
+                            <button onclick="selectLevel4Option(${idx}, true)" id="l4-btn-${idx}-true" class="l4-btn-${idx} flex-1 bg-slate-800 hover:bg-emerald-600/30 border border-slate-600 hover:border-emerald-500 rounded-xl py-2 text-xs font-bold text-slate-300 transition">
+                                <i class="fa-solid fa-check text-emerald-400 mr-1"></i> Lleva 'H'
+                            </button>
+                            <button onclick="selectLevel4Option(${idx}, false)" id="l4-btn-${idx}-false" class="l4-btn-${idx} flex-1 bg-slate-800 hover:bg-red-600/30 border border-slate-600 hover:border-red-500 rounded-xl py-2 text-xs font-bold text-slate-300 transition">
+                                <i class="fa-solid fa-xmark text-red-400 mr-1"></i> NO lleva 'H'
+                            </button>
+                        </div>
+                        <input type="hidden" id="l4-val-${idx}" value="">
+                    </div>
+                `;
+            });
+        }
+
+        function selectLevel4Option(idx, boolVal) {
+            playSound('click');
+            document.querySelectorAll(`.l4-btn-${idx}`).forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'border-indigo-400', 'text-white');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`l4-btn-${idx}-${boolVal}`);
+            activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+            activeBtn.classList.add('bg-indigo-600', 'border-indigo-400', 'text-white');
+
+            document.getElementById(`l4-val-${idx}`).value = boolVal ? "true" : "false";
+        }
+
+        function checkLevel4() {
+            let allCorrect = true;
+            level4Data.forEach((item, idx) => {
+                const val = document.getElementById(`l4-val-${idx}`).value;
+                if (val === "" || (val === "true") !== item.hasH) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                score += 250;
+                updateScoreUI();
+                showToast("¡Gran discernimiento ortográfico!", "success");
+                loadLevel(5);
+            } else {
+                loseLife();
+            }
+        }
+
+        function renderLevel5() {
+            const container = document.getElementById('l5-container');
+            let passageHTML = "";
+
+            level5Data.text.forEach(part => {
+                if (["1", "2", "3", "4", "5"].includes(part)) {
+                    const blank = level5Data.blanks.find(b => b.id === part);
+                    const optsHTML = blank.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                    passageHTML += `
+                        <select id="l5-blank-${part}" class="inline-block mx-1 bg-slate-800 border-2 border-purple-500 text-purple-300 font-bold rounded-lg px-2 py-1 focus:outline-none">
+                            <option value="">[ ? ]</option>
+                            ${optsHTML}
+                        </select>
+                    `;
+                } else {
+                    passageHTML += `<span>${part}</span>`;
+                }
+            });
+
+            container.innerHTML = `<p class="leading-loose">${passageHTML}</p>`;
+        }
+
+        function checkLevel5() {
+            let allCorrect = true;
+            level5Data.blanks.forEach(blank => {
+                const val = document.getElementById(`l5-blank-${blank.id}`).value;
+                if (val !== blank.answer) {
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('victory');
+                score += 300;
+                updateScoreUI();
+
+                document.querySelectorAll('.level-screen').forEach(el => el.classList.add('hidden'));
+                document.getElementById('game-stats-bar').classList.add('hidden');
+
+                document.getElementById('victory-player-text').innerText = `¡Felicitaciones, ${playerName}! Restauraste todos los textos.`;
+                document.getElementById('victory-score').innerText = `${score} Puntos`;
+                document.getElementById('victory-lives').innerText = `${lives} / 3`;
+
+                document.getElementById('screen-victory').classList.remove('hidden');
+                triggerConfetti();
+            } else {
+                loseLife();
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function toggleRulesModal() {
+            playSound('click');
+            const modal = document.getElementById('rules-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        const levelHints = {
+            1: "Recuerda: Si la palabra empieza por hia-, hie-, hue-, hui- SIEMPRE lleva 'H' al principio (ej: hielo, huevo).",
+            2: "Usa los prefijos griegos: hidr- (agua), hiper- (exceso), hipo- (debajo), hemi- (mitad), hecto- (cien). Todos se escriben con H.",
+            3: "Los verbos hacer, haber, hablar, hallar y huir siempre mantienen la H en todas sus conjugaciones (hizo, había, habló, etc.).",
+            4: "Las palabras con HUM- seguido de vocal (humo, humedad) llevan H. Palabras como umbral o umbría no tienen H.",
+            5: "Lee con atención el texto y aplica cada una de las 4 reglas que pusiste en práctica durante el juego."
+        };
+
+        function showLevelHint(level) {
+            playSound('click');
+            document.getElementById('hint-text').innerText = levelHints[level];
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+
+        function closeHintModal() {
+            playSound('click');
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+
+        function triggerConfetti() {
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            if (!confettiCanvas) return;
+
+            const cCtx = confettiCanvas.getContext('2d');
+            confettiCanvas.width = confettiCanvas.offsetWidth;
+            confettiCanvas.height = confettiCanvas.offsetHeight;
+
+            const particles = [];
+            const colors = ['#06b6d4', '#10b981', '#6366f1', '#f59e0b', '#ec4899', '#3b82f6'];
+
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speedY: Math.random() * 3 + 2,
+                    speedX: Math.random() * 2 - 1,
+                    angle: Math.random() * 360
+                });
+            }
+
+            function render() {
+                cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.angle += 2;
+
+                    cCtx.save();
+                    cCtx.translate(p.x, p.y);
+                    cCtx.rotate((p.angle * Math.PI) / 180);
+                    cCtx.fillStyle = p.color;
+                    cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    cCtx.restore();
+
+                    if (p.y > confettiCanvas.height) {
+                        p.y = -10;
+                        p.x = Math.random() * confettiCanvas.width;
+                    }
+                });
+
+                requestAnimationFrame(render);
+            }
+
+            render();
+        }
+    </script>
+</body>
+</html>
